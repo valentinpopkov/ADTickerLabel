@@ -19,6 +19,9 @@
 @property (nonatomic, unsafe_unretained) ADTickerLabelScrollDirection scrollDirection;
 @property (nonatomic, unsafe_unretained) NSInteger selectedCharacterIndex;
 
+@property int count;
+@property (nonatomic, strong) CallbackBlock callbackBlock;
+
 - (void)setSelectedCharacter:(NSString *)selectedCharacter animated:(BOOL)animated;
 - (id)initWithFrame:(CGRect)frame textLabel:(UILabel *)textLabel;
 
@@ -75,8 +78,12 @@
     [UIView animateWithDuration:self.changeTextAnimationDuration animations:^{
         self.frame = newFrame;
     } completion:^(BOOL finished) {
-        
-        callback();
+        if (callback) {
+            callback();
+        }
+        if (self.callbackBlock) {
+            self.callbackBlock();
+        }
     }];
 }
 
@@ -159,6 +166,8 @@
 @end
 
 @interface ADTickerLabel()
+
+
 
 @property (nonatomic, strong) NSMutableArray *characterViewsArray;
 @property (nonatomic, strong) NSArray *charactersArray;
@@ -463,9 +472,16 @@
             [self updateUIFrames];
         }
         
+        __block int count = self.characterViewsArray.count;
         [self.characterViewsArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             
             ADTickerCharacterView *numericView = (ADTickerCharacterView *)obj;
+            numericView.callbackBlock = ^(){
+                count -= 1;
+                if (!count && self.callbackBlock) {
+                    self.callbackBlock();
+                }
+            };
             [numericView setSelectedCharacter:[text substringWithRange:NSMakeRange(idx, 1)] animated:animated];
         }];
         

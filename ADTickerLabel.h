@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+typedef void(^CallbackBlock)();
+
 typedef enum{
     ADTickerLabelScrollDirectionUp = 1,
     ADTickerLabelScrollDirectionDown = 2
@@ -17,6 +19,8 @@ typedef enum{
 
 @property (nonatomic, strong) UIFont *font;
 @property (nonatomic, strong) UIColor *textColor;
+
+@property (nonatomic, strong) CallbackBlock callbackBlock;
 
 /*
  Default 8 px
