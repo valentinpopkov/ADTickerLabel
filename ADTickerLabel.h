@@ -54,4 +54,9 @@ typedef enum{
  */
 @property (nonatomic, unsafe_unretained) UITextAlignment textAlignment;
 
+/*
+ Method to set text animated or not. - (void)setText:text now calls this method with animated:YES
+ */
+- (void)setText:(NSString *)text animated:(BOOL)animated;
+
 @end

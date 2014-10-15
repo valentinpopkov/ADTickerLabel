@@ -430,7 +430,11 @@
     }
 }
 
-- (void)setText:(NSString *)text{
+- (void)setText:(NSString *)text {
+    [self setText:text animated:YES];
+}
+
+- (void)setText:(NSString *)text animated:(BOOL)animated{
     
     if(![_text isEqualToString: text]){
         
@@ -462,7 +466,7 @@
         [self.characterViewsArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             
             ADTickerCharacterView *numericView = (ADTickerCharacterView *)obj;
-            [numericView setSelectedCharacter:[text substringWithRange:NSMakeRange(idx, 1)] animated:YES];
+            [numericView setSelectedCharacter:[text substringWithRange:NSMakeRange(idx, 1)] animated:animated];
         }];
         
         _text = text;
