@@ -199,6 +199,7 @@
         self.characterViewsArray = [NSMutableArray array];
         self.changeTextAnimationDuration = 1.f;
         self.scrollDirection = ADTickerLabelScrollDirectionUp;
+        self.onlyIntegerValues = NO;
         
         [self addMaskLayer];
     }
@@ -365,10 +366,18 @@
         _scrollDirection = scrollDirection;
         
         if(scrollDirection == ADTickerLabelScrollDirectionDown){
-            self.charactersArray = @[@"9", @"8", @"7", @"6", @"5", @"4", @"3", @"2", @"1", @"0", @".", @"9", @"8", @"7", @"6", @"5", @"4", @"3", @"2", @"1", @"0", @"."];
+            if (self.onlyIntegerValues) {
+                self.charactersArray = @[@"9", @"8", @"7", @"6", @"5", @"4", @"3", @"2", @"1", @"0"];
+            } else {
+                self.charactersArray = @[@"9", @"8", @"7", @"6", @"5", @"4", @"3", @"2", @"1", @"0", @".", @"9", @"8", @"7", @"6", @"5", @"4", @"3", @"2", @"1", @"0", @"."];
+            }
         }
         else{
-            self.charactersArray = @[@".", @"0", @"1", @"2", @"3", @"4", @"5", @"6", @"7", @"8", @"9", @".", @"0", @"1", @"2", @"3", @"4", @"5", @"6", @"7", @"8", @"9"];
+            if (self.onlyIntegerValues) {
+                self.charactersArray = @[@"", @"0", @"1", @"2", @"3", @"4", @"5", @"6", @"7", @"8", @"9"];
+            } else {
+                self.charactersArray = @[@".", @"0", @"1", @"2", @"3", @"4", @"5", @"6", @"7", @"8", @"9", @".", @"0", @"1", @"2", @"3", @"4", @"5", @"6", @"7", @"8", @"9"];
+            }
         }
         
         [self.characterViewsArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {

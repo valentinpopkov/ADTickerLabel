@@ -22,6 +22,8 @@ typedef enum{
 
 @property (nonatomic, strong) CallbackBlock callbackBlock;
 
+@property BOOL onlyIntegerValues;
+
 /*
  Default 8 px
  */
