@@ -99,10 +99,20 @@
         
         if(selectedCharacterIndex <= self.selectedCharacterIndex){
             
-            [self animateToPositionY:[self positionYForCharacterAtIndex: selectedCharacterIndex] withCallback:^{
+            if (animated) {
+                [self animateToPositionY:[self positionYForCharacterAtIndex: selectedCharacterIndex] withCallback:^{
+                    self.selectedCharacter = selectedCharacter;
+                    self.selectedCharacterIndex = selectedCharacterIndex;
+                }];
+            }
+            else {
+                CGFloat positionY = [self positionYForCharacterAtIndex: selectedCharacterIndex];
+                CGRect newFrame = self.frame;
+                newFrame.origin.y = positionY;
+                self.frame = newFrame;
                 self.selectedCharacter = selectedCharacter;
                 self.selectedCharacterIndex = selectedCharacterIndex;
-            }];
+            }
         }
         else if(selectedCharacterIndex > self.selectedCharacterIndex){
             
@@ -115,14 +125,27 @@
                 }
             }
             
-            [self animateToPositionY:[self positionYForCharacterAtIndex: selectedCharacterIndex] withCallback:^{
+            if (animated) {
+                [self animateToPositionY:[self positionYForCharacterAtIndex: selectedCharacterIndex] withCallback:^{
+                    self.selectedCharacter = selectedCharacter;
+                    self.selectedCharacterIndex = [self.charactersArray indexOfObject: selectedCharacter];
+                    
+                    CGRect newFrame = self.frame;
+                    newFrame.origin.y = [self positionYForCharacterAtIndex: self.selectedCharacterIndex];
+                    self.frame = newFrame;
+                }];
+            }
+            else {
+                CGFloat positionY = [self positionYForCharacterAtIndex: selectedCharacterIndex];
+                CGRect newFrame = self.frame;
+                newFrame.origin.y = positionY;
+                self.frame = newFrame;
                 self.selectedCharacter = selectedCharacter;
                 self.selectedCharacterIndex = [self.charactersArray indexOfObject: selectedCharacter];
-                
-                CGRect newFrame = self.frame;
+                newFrame = self.frame;
                 newFrame.origin.y = [self positionYForCharacterAtIndex: self.selectedCharacterIndex];
                 self.frame = newFrame;
-            }];
+            }
         }
     }
     else{
@@ -166,8 +189,6 @@
 @end
 
 @interface ADTickerLabel()
-
-
 
 @property (nonatomic, strong) NSMutableArray *characterViewsArray;
 @property (nonatomic, strong) NSArray *charactersArray;
@@ -367,14 +388,14 @@
         
         if(scrollDirection == ADTickerLabelScrollDirectionDown){
             if (self.onlyIntegerValues) {
-                self.charactersArray = @[@"9", @"8", @"7", @"6", @"5", @"4", @"3", @"2", @"1", @"0"];
+                self.charactersArray = @[@"9", @"8", @"7", @"6", @"5", @"4", @"3", @"2", @"1", @"0", @"9", @"8", @"7", @"6", @"5", @"4", @"3", @"2", @"1", @"0"];
             } else {
                 self.charactersArray = @[@"9", @"8", @"7", @"6", @"5", @"4", @"3", @"2", @"1", @"0", @".", @"9", @"8", @"7", @"6", @"5", @"4", @"3", @"2", @"1", @"0", @"."];
             }
         }
         else{
             if (self.onlyIntegerValues) {
-                self.charactersArray = @[@"", @"0", @"1", @"2", @"3", @"4", @"5", @"6", @"7", @"8", @"9"];
+                self.charactersArray = @[@"0", @"1", @"2", @"3", @"4", @"5", @"6", @"7", @"8", @"9", @"0", @"1", @"2", @"3", @"4", @"5", @"6", @"7", @"8", @"9"];
             } else {
                 self.charactersArray = @[@".", @"0", @"1", @"2", @"3", @"4", @"5", @"6", @"7", @"8", @"9", @".", @"0", @"1", @"2", @"3", @"4", @"5", @"6", @"7", @"8", @"9"];
             }
@@ -454,8 +475,11 @@
 
 - (void)setText:(NSString *)text animated:(BOOL)animated{
     
-    if(![_text isEqualToString: text]){
-        
+    if([_text isEqualToString: text]){
+        self.callbackBlock();
+    }
+    else {
+    
         NSInteger oldTextLength = [_text length];
         NSInteger newTextLength = [text length];
         
@@ -481,21 +505,20 @@
             [self updateUIFrames];
         }
         
-        __block int count = self.characterViewsArray.count;
+        __block NSInteger count = 0;
         [self.characterViewsArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            
             ADTickerCharacterView *numericView = (ADTickerCharacterView *)obj;
             numericView.callbackBlock = ^(){
-                count -= 1;
-                if (!count && self.callbackBlock) {
+                count += 1;
+                if (self.characterViewsArray.count == count && self.callbackBlock) {
                     self.callbackBlock();
                 }
             };
             [numericView setSelectedCharacter:[text substringWithRange:NSMakeRange(idx, 1)] animated:animated];
         }];
-        
+
         _text = text;
-        
+
         [self updateTickerCharacterViewsShadow];
     }
 }
